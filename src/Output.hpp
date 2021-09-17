@@ -1,40 +1,40 @@
-#ifndef JOINT_DISPATCHER_OUTPUT_HPP
-#define JOINT_DISPATCHER_OUTPUT_HPP
+#ifndef DISPATCHER_BASE_OUTPUT_HPP
+#define DISPATCHER_BASE_OUTPUT_HPP
 
 #include <vector>
 #include <string>
 #include <base/Time.hpp>
-#include <base/samples/Joints.hpp>
+#include <base/NamedVector.hpp>
 
-namespace joint_dispatcher
+namespace dispatcher_base
 {
     /** Configuration of an output on Dispatcher
      */
-    class Output
+    template <typename T> class Output
     {
         /** The output name
          */
         std::string mName;
 
-        base::samples::Joints mState;
+        base::NamedVector<T> mState;
 
         /** If true, this output should be exported the next time
          * Dispatcher::read is called for it
          */
         bool mIsNew;
-        /** If true, all joints in mState have been updated at least once.
+        /** If true, all elements in mState have been updated at least once.
          * isNew will return false until it is the case
          */
         bool mFullyInitialized;
-        /** A count of joints that need to be updated before the joint has been
+        /** A count of elements that need to be updated before the element has been
          * fully updated
          */
         size_t mFullUpdateCounter;
-        /** A joint-by-joint flag marking the joints as having been updated
+        /** A element-by-element flag marking the elements as having been updated
          * since the last call to Dispatcher::read or not
          */
-        std::vector<bool> mUpdatedJoints;
-        /** A joint-by-joint update flag
+        std::vector<bool> mUpdatedElements;
+        /** A element-by-element update flag
          */
         std::vector<base::Time> mUpdateTime;
 
@@ -43,28 +43,28 @@ namespace joint_dispatcher
 
         std::string getName() const;
 
-        /** Updates a joint on this output */
-        void updateJoint(size_t jointIdx, base::Time const& time, base::JointState const& sample, bool needsRead=true);
+        /** Updates a element on this output */
+        void updateJoint(size_t elementIdx, base::Time const& time, T const& sample, bool needsRead=true);
 
-        /** Read the current joint state, resetting all the 'new' flags */
-        base::samples::Joints read();
+        /** Read the current element state, resetting all the 'new' flags */
+        base::NamedVector<T> read();
 
-        /** The list of joint names */
-        std::vector<std::string> getJointNames() const;
+        /** The list of element names */
+        std::vector<std::string> getNames() const;
 
         /** Returns the list of indexes that correspond to the requested names
          *
-         * @throws base::samples::Joints::InvalidName if one of the names does not exist
+         * @throws base::NamedVector<T>::InvalidName if one of the names does not exist
          */
-        std::vector<size_t> mapJointNamesToIndex(std::vector<std::string> const& names) const;
+        std::vector<size_t> mapNamesToIndex(std::vector<std::string> const& names) const;
 
-        /** The count of joints */
+        /** The count of elements */
         size_t size() const;
 
-        /** Resize while setting the list of joint names at the same time */
-        void resize(std::vector<std::string> const& jointNames);
+        /** Resize while setting the list of element names at the same time */
+        void resize(std::vector<std::string> const& elementNames);
 
-        /** Declares the number of joints this output will generate */
+        /** Declares the number of elements this output will generate */
         void resize(size_t size);
 
         /** Resets the internal tracking state to pristine, without changing
@@ -77,11 +77,13 @@ namespace joint_dispatcher
          */
         bool isNew() const;
 
-        /** Returns true if all joints of the current sample have been updated
+        /** Returns true if all elements of the current sample have been updated
          * since the last call to read()
          */
         bool isFullyUpdated() const;
     };
+    
+    
 }
 
 #endif

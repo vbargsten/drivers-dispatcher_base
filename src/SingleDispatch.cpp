@@ -1,18 +1,21 @@
-#include <joint_dispatcher/SingleDispatch.hpp>
-#include <joint_dispatcher/Output.hpp>
+#include <dispatcher_base/SingleDispatch.hpp>
+#include <dispatcher_base/Output.hpp>
 
-using namespace joint_dispatcher;
+using namespace dispatcher_base;
 using namespace std;
 
-SingleDispatch::SingleDispatch()
+template <typename T>
+SingleDispatch<T>::SingleDispatch()
     : output_channel(0) {}
 
-void SingleDispatch::resolveInputNames(base::samples::Joints const& sample)
+template <typename T>
+void SingleDispatch<T>::resolveInputNames(base::NamedVector<T> const& sample)
 {
     input.resolveNames(sample);
 }
 
-void SingleDispatch::write(base::samples::Joints const& sample)
+template <typename T>
+void SingleDispatch<T>::write(base::NamedVector<T> const& sample)
 {
     for (size_t i = 0; i < input.size(); ++i)
     {

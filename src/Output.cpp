@@ -1,29 +1,35 @@
-#include <joint_dispatcher/Output.hpp>
+#include <dispatcher_base/Output.hpp>
 
-using namespace joint_dispatcher;
+using namespace dispatcher_base;
 using namespace std;
 
-Output::Output(std::string const& name)
+    
+template <typename T>
+Output<T>::Output(std::string const& name)
     : mName(name)
     , mIsNew(false)
-    , mFullyInitialized(false) {}
-
-std::string Output::getName() const
+    , mFullyInitialized(false) {};
+    
+template <typename T>
+std::string Output<T>::getName() const
 {
     return mName;
 }
 
-size_t Output::size() const
+template <typename T>
+size_t Output<T>::size() const
 {
     return mState.size();
 }
 
-vector<string> Output::getJointNames() const
+template <typename T>
+vector<string> Output<T>::getNames() const
 {
     return mState.names;
 }
 
-vector<size_t> Output::mapJointNamesToIndex(vector<string> const& names) const
+template <typename T>
+vector<size_t> Output<T>::mapNamesToIndex(vector<string> const& names) const
 {
     vector<size_t> result(names.size());
     for (size_t nameIdx = 0; nameIdx < names.size(); ++nameIdx)
@@ -31,64 +37,71 @@ vector<size_t> Output::mapJointNamesToIndex(vector<string> const& names) const
     return result;
 }
 
-void Output::resize(vector<string> const& jointNames)
+template <typename T>
+void Output<T>::resize(vector<string> const& elementNames)
 {
-    resize(jointNames.size());
-    mState.names = jointNames;
+    resize(elementNames.size());
+    mState.names = elementNames;
 }
 
-void Output::resize(size_t size)
+template <typename T>
+void Output<T>::resize(size_t size)
 {
     mState.resize(size);
-    mUpdatedJoints.resize(size);
+    mUpdatedElements.resize(size);
     mUpdateTime.resize(size);
     reset();
 }
 
-void Output::reset()
+template <typename T>
+void Output<T>::reset()
 {
-    fill(mUpdatedJoints.begin(), mUpdatedJoints.end(), false);
+    fill(mUpdatedElements.begin(), mUpdatedElements.end(), false);
     fill(mUpdateTime.begin(), mUpdateTime.end(), base::Time());
     mFullUpdateCounter = mState.size();
     mFullyInitialized = false;
     mIsNew = false;
 }
 
-bool Output::isNew() const
+template <typename T>
+bool Output<T>::isNew() const
 {
     return mFullyInitialized && mIsNew;
 }
 
-bool Output::isFullyUpdated() const
+template <typename T>
+bool Output<T>::isFullyUpdated() const
 {
     return mFullUpdateCounter == 0;
 }
 
-void Output::updateJoint(size_t jointIdx, base::Time const& time, base::JointState const& sample, bool needsRead)
+template <typename T>
+void Output<T>::updateJoint(size_t elementIdx, base::Time const& time, T const& sample, bool needsRead)
 {
-    if (jointIdx >= size())
-        throw std::out_of_range("given joint index is out of bounds");
+    if (elementIdx >= size())
+        throw std::out_of_range("given element index is out of bounds");
 
     if (needsRead)
         mIsNew = true;
 
-    mState[jointIdx] = sample;
+    mState[elementIdx] = sample;
     if (mState.time < time)
         mState.time = time;
-    mUpdateTime[jointIdx] = time;
-    if (!mUpdatedJoints[jointIdx])
+    mUpdateTime[elementIdx] = time;
+    if (!mUpdatedElements[elementIdx])
     {
-        mUpdatedJoints[jointIdx] = true;
+        mUpdatedElements[elementIdx] = true;
         mFullUpdateCounter--;
         if (mFullUpdateCounter == 0)
             mFullyInitialized = true;
     }
 }
 
-base::samples::Joints Output::read()
+template <typename T>
+base::NamedVector<T> Output<T>::read()
 {
     mIsNew = false;
-    fill(mUpdatedJoints.begin(), mUpdatedJoints.end(), false);
-    mFullUpdateCounter = mUpdatedJoints.size();
+    fill(mUpdatedElements.begin(), mUpdatedElements.end(), false);
+    mFullUpdateCounter = mUpdatedElements.size();
     return mState;
 }

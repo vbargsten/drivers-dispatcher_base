@@ -1,21 +1,22 @@
-#ifndef JOINT_DISPATCHER_DISPATCHER_HPP
-#define JOINT_DISPATCHER_DISPATCHER_HPP
+#ifndef DISPATCHER_BASE_DISPATCHER_HPP
+#define DISPATCHER_BASE_DISPATCHER_HPP
 
 #include <vector>
-#include <joint_dispatcher/Input.hpp>
-#include <joint_dispatcher/Output.hpp>
+#include <dispatcher_base/Input.hpp>
+#include <dispatcher_base/Output.hpp>
 
-namespace joint_dispatcher
+namespace dispatcher_base
 {
-    /** Implementation of mux/demux logic for base::samples::Joints
+    /** Implementation of mux/demux logic for base::NamedVector<T>
      *
-     * This class allows to transfer arbitrary sets of joints on inputs to other
+     * This class allows to transfer arbitrary sets of elements on inputs to other
      * sets on outputs. It allows to 
      */
+    template <typename T>
     class Dispatcher
     {
-        std::vector<Input>  mInputs;
-        std::vector<Output> mOutputs;
+        std::vector<Input<T>>  mInputs;
+        std::vector<Output<T>> mOutputs;
 
     public:
         typedef size_t ChannelID;
@@ -28,17 +29,17 @@ namespace joint_dispatcher
          */
         ChannelID addInput(std::string const& name = "");
 
-        /** This declares an output to the dispatcher, as well as the joint names
+        /** This declares an output to the dispatcher, as well as the element names
          * for this output
          *
          * @param name the output name. This can be left empty.
          */
-        ChannelID addOutput(std::string const& name, std::vector<std::string> const& jointNames);
+        ChannelID addOutput(std::string const& name, std::vector<std::string> const& elementNames);
 
         /** This declares an output to the dispatcher, as well as the expected
-         * number of joints.
+         * number of elements.
          *
-         * If non-zero, the number of joints is used for (1) consistency
+         * If non-zero, the number of elements is used for (1) consistency
          * checking and (2) pre-allocating the needed arrays.
          */
         ChannelID addOutput(std::string const& name = "", size_t size = 0);
@@ -53,22 +54,22 @@ namespace joint_dispatcher
 
         /** Returns the Output object associated with the given ID
          */
-        Output &getOutput(ChannelID id);
+        Output<T> &getOutput(ChannelID id);
         
-        /** This declares a mapping from some joints on a given input and some
-         * joints on a given output
+        /** This declares a mapping from some elements on a given input and some
+         * elements on a given output
          */
         void addDispatch(
-                ChannelID input,  JointSelection const& inputJoints,
-                ChannelID output, JointSelection const& outputJoints,
+                ChannelID input,  ElementSelection<T> const& inputElements,
+                ChannelID output, ElementSelection<T> const& outputElements,
                 bool defer_output=false);
 
         /** @overload
          */
         void addDispatch(std::string const& input,
-                JointSelection const& inputJoints,
+                ElementSelection<T> const& inputElements,
                 std::string const& output,
-                JointSelection const& outputJoints,
+                ElementSelection<T> const& outputElements,
                 bool defer_output=false);
 
         /** Pushes a sample on a given input
@@ -76,12 +77,12 @@ namespace joint_dispatcher
          * The outputs for which there is a dispatch are going to be updated
          */
         void write(ChannelID input,
-                base::samples::Joints const& sample);
+                base::NamedVector<T> const& sample);
 
         /** @overload
          */
         void write(std::string const& input,
-                base::samples::Joints const& sample);
+                base::NamedVector<T> const& sample);
 
         /** Reads a given output channel
          *
@@ -89,11 +90,11 @@ namespace joint_dispatcher
          *   and false otherwise. The sample is not modified if the channel was
          *   not updated
          */
-        bool read(ChannelID output, base::samples::Joints& sample);
+        bool read(ChannelID output, base::NamedVector<T>& sample);
 
         /** @overload
          */
-        bool read(std::string const& name, base::samples::Joints& sample);
+        bool read(std::string const& name, base::NamedVector<T>& sample);
 
         /** Resets the internal tracking state without changing the
          * configuration state

@@ -1,16 +1,16 @@
 #include <boost/test/unit_test.hpp>
-#include <joint_dispatcher/Dispatcher.hpp>
+#include <dispatcher_base/Dispatcher.hpp>
 
-using namespace joint_dispatcher;
+using namespace dispatcher_base;
 
 BOOST_AUTO_TEST_CASE(it_should_be_able_to_resolve_the_names)
 {
-    base::samples::Joints joints;
+    base::NamedVector<T> joints;
     joints.names.push_back("0");
     joints.names.push_back("1");
     joints.names.push_back("2");
 
-    JointSelection sel;
+    ElementSelection sel;
     sel.byName.push_back("2");
     sel.byName.push_back("0");
     sel.resolveNames(joints);

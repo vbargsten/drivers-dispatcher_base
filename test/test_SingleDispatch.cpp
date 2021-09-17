@@ -1,8 +1,8 @@
 #include <boost/test/unit_test.hpp>
-#include <joint_dispatcher/Output.hpp>
-#include <joint_dispatcher/SingleDispatch.hpp>
+#include <dispatcher_base/Output.hpp>
+#include <dispatcher_base/SingleDispatch.hpp>
 
-using namespace joint_dispatcher;
+using namespace dispatcher_base;
 
 BOOST_AUTO_TEST_CASE(it_should_be_able_to_resolve_the_input_names)
 {
@@ -24,7 +24,7 @@ BOOST_AUTO_TEST_CASE(it_should_dispatch_an_input_sample_on_the_output)
     dispatch.output.byIndex.push_back(1);
     dispatch.output.byIndex.push_back(2);
     dispatch.output.byIndex.push_back(0);
-    base::samples::Joints sample;
+    base::NamedVector<T> sample;
     sample.resize(3);
     sample[0].position = 0;
     sample[1].position = 1;

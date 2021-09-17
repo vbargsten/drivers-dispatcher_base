@@ -1,22 +1,23 @@
-#ifndef JOINT_DISPATCHER_JOINT_SELECTION_HPP
-#define JOINT_DISPATCHER_JOINT_SELECTION_HPP
+#ifndef DISPATCHER_BASE_ELEMENT_SELECTION_HPP
+#define DISPATCHER_BASE_ELEMENT_SELECTION_HPP
 
 #include <vector>
 #include <string>
-#include <base/samples/Joints.hpp>
+#include <base/NamedVector.hpp>
 
-namespace joint_dispatcher
+namespace dispatcher_base
 {
-    /** This represents a subset of joints from a base::samples::Joints
+    /** This represents a subset of elements from a base::NamedVector<T>
      */
-    struct JointSelection
+    template <typename T>
+    struct ElementSelection
     {
         std::vector<int> byIndex;
         std::vector<std::string> byName;
 
-        size_t size() const { return byIndex.size(); }
+        size_t size() const { return byIndex.size(); };
 
-        void resolveNames(base::samples::Joints const& sample)
+        void resolveNames(base::NamedVector<T> const& sample)
         {
             if (!byName.empty())
             {

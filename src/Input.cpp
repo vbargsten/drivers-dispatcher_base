@@ -1,35 +1,39 @@
-#include <joint_dispatcher/Input.hpp>
+#include <dispatcher_base/Input.hpp>
 
-using namespace joint_dispatcher;
+using namespace dispatcher_base;
 
-Input::Input(std::string const& name)
+template <typename T>
+Input<T>::Input(std::string const& name)
     : mName(name) {}
-
-std::string Input::getName() const
+    
+template <typename T>
+std::string Input<T>::getName() const
 {
     return mName;
 }
 
-void Input::write(base::samples::Joints const& joints)
+template <typename T>
+void Input<T>::write(base::NamedVector<T> const& sample)
 {
     // Never written or names changed, resolve names on the dispatches
     if ( mLastUpdate.isNull() || 
-        inputJointNames.size() != joints.names.size() ||
-        inputJointNames != joints.names ) 
+        inputNames.size() != sample.names.size() ||
+        inputNames != sample.names ) 
     {
         for (size_t i = 0; i < dispatches.size(); ++i)
-            dispatches[i].resolveInputNames(joints);
+            dispatches[i].resolveInputNames(sample);
         
-        inputJointNames = joints.names;
+        inputNames = sample.names;
     }
 
     for (size_t i = 0; i < dispatches.size(); ++i)
-        dispatches[i].write(joints);
+        dispatches[i].write(sample);
 
-    mLastUpdate = joints.time;
+    mLastUpdate = sample.time;
 }
 
-void Input::reset()
+template <typename T>
+void Input<T>::reset()
 {
     mLastUpdate = base::Time();
 }

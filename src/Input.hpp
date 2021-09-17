@@ -1,19 +1,20 @@
-#ifndef JOINT_DISPATCHER_INPUT_HPP
-#define JOINT_DISPATCHER_INPUT_HPP
+#ifndef DISPATCHER_BASE_INPUT_HPP
+#define DISPATCHER_BASE_INPUT_HPP
 
 #include <string>
-#include <base/samples/Joints.hpp>
-#include <joint_dispatcher/SingleDispatch.hpp>
+#include <base/NamedVector.hpp>
+#include <dispatcher_base/SingleDispatch.hpp>
 
-namespace joint_dispatcher
+namespace dispatcher_base
 {
     /** Configuration of an input on Dispatcher
      */
+    template <typename T> 
     class Input
     {
         std::string mName;
         base::Time mLastUpdate;
-        std::vector<std::string> inputJointNames;
+        std::vector<std::string> inputNames;
 
     public:
         Input(std::string const& name = "");
@@ -22,11 +23,11 @@ namespace joint_dispatcher
 
         /** The list of dispatches that use this input
          */
-        std::vector<SingleDispatch> dispatches;
+        std::vector<SingleDispatch<T>> dispatches;
 
         /** Write a new sample on this input
          */
-        void write(base::samples::Joints const& sample);
+        void write(base::NamedVector<T> const& sample);
 
         /** Resets the internal tracking state, without changing the
          * configuration

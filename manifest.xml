@@ -1,7 +1,7 @@
 <package>
-  <description brief="Implementation of mux/demux logic for base::samples::Joints and base::commands::Joints">
-      Generic implementation of a N-to-M mapping for base::samples::Joints. It
-      allows to define arbitrary dispatches of joints, either by name or by
+  <description brief="Implementation of mux/demux logic for base::NamedVector">
+      Generic implementation of a N-to-M mapping for base::NamedVector. It
+      allows to define arbitrary dispatches of elements, either by name or by
       index, and manage the input->output process.
   </description>
   <maintainer>Sylvain Joyeux/sylvain.joyeux@m4x.org</maintainer>
