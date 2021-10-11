@@ -27,7 +27,7 @@ namespace dispatcher_base
 
         /** Write a new sample on this input
          */
-        void write(base::NamedVector<T> const& sample);
+        void write(base::NamedVector<T> const& sample, base::Time time=base::Time::now());
 
         /** Resets the internal tracking state, without changing the
          * configuration

@@ -1,4 +1,6 @@
+#pragma once
 #include <dispatcher_base/Input.hpp>
+#include <dispatcher_base/SingleDispatch_impl.hpp>
 
 using namespace dispatcher_base;
 
@@ -13,7 +15,7 @@ std::string Input<T>::getName() const
 }
 
 template <typename T>
-void Input<T>::write(base::NamedVector<T> const& sample)
+void Input<T>::write(base::NamedVector<T> const& sample, base::Time time)
 {
     // Never written or names changed, resolve names on the dispatches
     if ( mLastUpdate.isNull() || 
@@ -27,9 +29,9 @@ void Input<T>::write(base::NamedVector<T> const& sample)
     }
 
     for (size_t i = 0; i < dispatches.size(); ++i)
-        dispatches[i].write(sample);
+        dispatches[i].write(sample, time);
 
-    mLastUpdate = sample.time;
+    mLastUpdate = time;
 }
 
 template <typename T>

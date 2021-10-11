@@ -77,12 +77,12 @@ namespace dispatcher_base
          * The outputs for which there is a dispatch are going to be updated
          */
         void write(ChannelID input,
-                base::NamedVector<T> const& sample);
+                base::NamedVector<T> const& sample, base::Time time=base::Time::now());
 
         /** @overload
          */
         void write(std::string const& input,
-                base::NamedVector<T> const& sample);
+                base::NamedVector<T> const& sample, base::Time time=base::Time::now());
 
         /** Reads a given output channel
          *
@@ -91,10 +91,12 @@ namespace dispatcher_base
          *   not updated
          */
         bool read(ChannelID output, base::NamedVector<T>& sample);
+        bool read(ChannelID output, base::NamedVector<T>& sample, base::Time& time);
 
         /** @overload
          */
         bool read(std::string const& name, base::NamedVector<T>& sample);
+        bool read(std::string const& name, base::NamedVector<T>& sample, base::Time& time);
 
         /** Resets the internal tracking state without changing the
          * configuration state

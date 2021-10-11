@@ -27,7 +27,7 @@ namespace dispatcher_base
 
         void resolveInputNames(base::NamedVector<T> const& input_sample);
 
-        void write(base::NamedVector<T> const& input);
+        void write(base::NamedVector<T> const& input, base::Time time=base::Time::now());
     };
 }
 

@@ -1,4 +1,7 @@
+#pragma once
 #include <dispatcher_base/Dispatcher.hpp>
+#include <dispatcher_base/Input_impl.hpp>
+#include <dispatcher_base/Output_impl.hpp>
 
 using namespace dispatcher_base;
 
@@ -86,22 +89,29 @@ void Dispatcher<T>::addDispatch(
 }
 
 template <typename T>
-void Dispatcher<T>::write(ChannelID input, base::NamedVector<T> const& sample)
+void Dispatcher<T>::write(ChannelID input, base::NamedVector<T> const& sample, base::Time time)
 {
     if (input >= mInputs.size())
         throw std::out_of_range("given input channel ID is out of bounds");
 
-    mInputs[input].write(sample);
+    mInputs[input].write(sample, time);
 }
 
 template <typename T>
-void Dispatcher<T>::write(std::string const& input, base::NamedVector<T> const& sample)
+void Dispatcher<T>::write(std::string const& input, base::NamedVector<T> const& sample, base::Time time)
 {
-    write(getInputByName(input), sample);
+    write(getInputByName(input), sample, time);
 }
 
 template <typename T>
 bool Dispatcher<T>::read(ChannelID output, base::NamedVector<T>& sample)
+{
+    base::Time time;
+    return Dispatcher<T>::read(output, sample, time);
+}
+
+template <typename T>
+bool Dispatcher<T>::read(ChannelID output, base::NamedVector<T>& sample, base::Time& time)
 {
     if (output >= mOutputs.size())
         throw std::out_of_range("given output channel ID is out of bounds");
@@ -122,7 +132,14 @@ bool Dispatcher<T>::read(ChannelID output, base::NamedVector<T>& sample)
 template <typename T>
 bool Dispatcher<T>::read(std::string const& name, base::NamedVector<T>& sample)
 {
-    return read(getOutputByName(name), sample);
+    return Dispatcher<T>::read(getOutputByName(name), sample);
+}
+
+
+template <typename T>
+bool Dispatcher<T>::read(std::string const& name, base::NamedVector<T>& sample, base::Time& time)
+{
+    return Dispatcher<T>::read(getOutputByName(name), sample, time);
 }
 
 template <typename T>

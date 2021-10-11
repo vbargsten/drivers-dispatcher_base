@@ -1,3 +1,4 @@
+#pragma once
 #include <dispatcher_base/Output.hpp>
 
 using namespace dispatcher_base;
@@ -58,6 +59,7 @@ void Output<T>::reset()
 {
     fill(mUpdatedElements.begin(), mUpdatedElements.end(), false);
     fill(mUpdateTime.begin(), mUpdateTime.end(), base::Time());
+    mLatestUpdateTime = base::Time();
     mFullUpdateCounter = mState.size();
     mFullyInitialized = false;
     mIsNew = false;
@@ -85,8 +87,8 @@ void Output<T>::updateJoint(size_t elementIdx, base::Time const& time, T const& 
         mIsNew = true;
 
     mState[elementIdx] = sample;
-    if (mState.time < time)
-        mState.time = time;
+    if (mLatestUpdateTime < time)
+        mLatestUpdateTime = time;
     mUpdateTime[elementIdx] = time;
     if (!mUpdatedElements[elementIdx])
     {
@@ -104,4 +106,17 @@ base::NamedVector<T> Output<T>::read()
     fill(mUpdatedElements.begin(), mUpdatedElements.end(), false);
     mFullUpdateCounter = mUpdatedElements.size();
     return mState;
+}
+
+template <typename T>
+bool Output<T>::read(base::NamedVector<T>& sample, base::Time& time) 
+{
+    sample = mState;
+    time = mLatestUpdateTime;
+    bool wasNew = mIsNew;
+    
+    mIsNew = false;
+    fill(mUpdatedElements.begin(), mUpdatedElements.end(), false);
+    mFullUpdateCounter = mUpdatedElements.size();
+    return wasNew;
 }

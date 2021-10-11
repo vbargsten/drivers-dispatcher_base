@@ -17,7 +17,8 @@ namespace dispatcher_base
         std::string mName;
 
         base::NamedVector<T> mState;
-
+        base::Time mLatestUpdateTime;
+        
         /** If true, this output should be exported the next time
          * Dispatcher::read is called for it
          */
@@ -48,6 +49,8 @@ namespace dispatcher_base
 
         /** Read the current element state, resetting all the 'new' flags */
         base::NamedVector<T> read();
+
+        bool read(base::NamedVector<T>&, base::Time&);
 
         /** The list of element names */
         std::vector<std::string> getNames() const;
